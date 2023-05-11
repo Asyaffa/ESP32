@@ -246,7 +246,7 @@ void HandleDataFromGoogle(String data)
 ================== UID Spreadsheet Google App Script Code ==================
 var timeZone = "Asia/Jakarta";
 var dateTimeFormat = "dd/MM/yyyy HH:mm:ss";
-var logSpreadSheetId = "1oeh_PEHBuI8Kpgshgm-Z22mint7M2y84PsCN0BLwY-M";
+var logSpreadSheetId = "-";
 
 //Function for RFID REGISTRY
 function doGet(e) 
