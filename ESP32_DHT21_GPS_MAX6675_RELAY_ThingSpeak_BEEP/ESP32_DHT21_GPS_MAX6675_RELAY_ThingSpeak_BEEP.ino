@@ -10,48 +10,49 @@
  MAX6675
  GND  = Common GND
  VCC  = 3V3
- SCK  = 18
- CS   = 5
- SO   = 19
+ SCK  = 25
+ CS   = 26
+ SO   = 27
  
  DHT21
  VCC  = 3V3
- DATA = 4
+ DATA = 5
  GND  = Common GND
  
  Relay
  VCC  = External 5V
- IN1  = 25
- IN2  = 26
+ IN1  = 4
+ IN2  = 2
  GND  = Common GND
 */
 
+#include <SPI.h>
 #include <WiFi.h>
-#include <ThingSpeak.h>
-#include <elapsedMillis.h>
 #include <DHT.h>
 #include <max6675.h>
+#include <ThingSpeak.h>
+#include <elapsedMillis.h>
 #include <TinyGPS++.h>
 
-#define WIFI_SSID     "(SSID)"
-#define WIFI_PASSWORD "(PASSWORD)"
+#define WIFI_SSID     "-"
+#define WIFI_PASSWORD "-"
 
-#define DHTPIN  4
+#define DHTPIN  5
 #define DHTTYPE DHT21
 
-const byte thermoSCK  = 18;
-const byte thermoCS   = 5;
-const byte thermoSO   = 19;
-const byte relayIN1   = 25;  //Cold Peltier
-const byte relayIN2   = 26;  //Hot Peltier
+const byte thermoSCK  = 25;
+const byte thermoCS   = 26;
+const byte thermoSO   = 27;
+const byte relayIN1   = 4;  //Cold Peltier
+const byte relayIN2   = 2;  //Hot Peltier
 
-unsigned long readInterval    = 2000;
-unsigned long printInterval   = 3000;
-unsigned long controlInterval = 1000;
 unsigned long uploadInterval  = 10000;
+unsigned long printInterval   = 5000;
+unsigned long readInterval    = 2000;
+unsigned long controlInterval = 1000;
 
 unsigned long channelNum  = 0000000;
-const char* apiKey        = "(Write API Key)";
+const char* apiKey        = "-";
 
 const int dhtCSetPointH   = 38;
 const int dhtCSetPointL   = 34;
@@ -59,8 +60,8 @@ const int dhtCSetPointHs  = 40;
 const int dhtCSetPointLs  = 32;
 
 float gpsLat, gpsLong;
-int thermoCelsius, thermoFahren;
-int dhtCelsius, dhtFahren, dhtHeat, dhtHum;
+float dhtCelsius, dhtFahren, dhtHeat, dhtHum;
+float thermoCelsius, thermoFahren;
 int relayFlag;
 
 elapsedMillis readMillis;
@@ -84,7 +85,6 @@ void setup()
     Serial.print(".");
     delay(300);
   }
-  Serial.println();
   Serial.print("Connected with IP: ");
   Serial.println(WiFi.localIP());
   Serial.println();   
@@ -112,12 +112,12 @@ void loop()
 
   if (readMillis >= readInterval)
   {
-    thermoCelsius = thermocouple.readCelsius();
-    thermoFahren  = thermocouple.readFahrenheit();
     dhtCelsius    = dht.readTemperature();
     dhtFahren     = dht.readTemperature(true);
     dhtHum        = dht.readHumidity();
     dhtHeat       = dht.computeHeatIndex(dhtFahren, dhtHum);
+    thermoCelsius = thermocouple.readCelsius();
+    thermoFahren  = thermocouple.readFahrenheit();
     
     readMillis = 0;
   }
@@ -164,19 +164,19 @@ void loop()
     Serial.print ("Thermocouple C : ");
     Serial.print (thermoCelsius);
     Serial.print ("*C");
-    Serial.print ("\t Thermocouple F : ");
+    Serial.print ("\tThermocouple F : ");
     Serial.print (thermoFahren);
     Serial.println ("*F");
     Serial.print ("DHT21 C        : "); 
     Serial.print (dhtCelsius);
     Serial.print ("*C");
-    Serial.print ("\t DHT21 F        : ");
+    Serial.print ("\tDHT21 F        : ");
     Serial.print (dhtFahren);
     Serial.println ("*F");
     Serial.print ("Humidity       : "); 
     Serial.print (dhtHum);
     Serial.print ("%");
-    Serial.print ("\t Heat Index     : ");
+    Serial.print ("\t\tHeat Index     : ");
     Serial.println (dhtHeat);
     Serial.println ("==================================================");
     
